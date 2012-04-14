@@ -2,15 +2,17 @@
 
 package termbox
 
-import "unicode/utf8"
-import "errors"
-import "bytes"
-import "syscall"
-import "unsafe"
-import "strings"
-import "strconv"
-import "os"
-import "io"
+import (
+	"bytes"
+	"errors"
+	"io"
+	"os"
+	"strconv"
+	"strings"
+	"syscall"
+	"unicode/utf8"
+	"unsafe"
+)
 
 // private API
 
@@ -123,7 +125,7 @@ func send_attr(fg, bg Attribute) {
 		if fg&AttrBold != 0 {
 			outbuf.WriteString(funcs[t_bold])
 		}
-		if bg&AttrBold != 0 {
+		if fg&AttrBlink|bg&AttrBlink != 0 {
 			outbuf.WriteString(funcs[t_blink])
 		}
 		if fg&AttrUnderline != 0 {

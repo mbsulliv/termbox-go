@@ -1,7 +1,9 @@
 package termbox
 
-import "syscall"
-import "unsafe"
+import (
+	"syscall"
+"unsafe"
+)
 
 type (
 	wchar uint16

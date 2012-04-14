@@ -2,9 +2,11 @@
 
 package termbox
 
-import "os"
-import "os/signal"
-import "syscall"
+import (
+	"os"
+	"os/signal"
+	"syscall"
+)
 
 // public API
 
@@ -96,7 +98,9 @@ func Close() {
 	tcsetattr(out.Fd(), &orig_tios)
 
 	out.Close()
-	in.Close()
+	// closing in will block on Darwin if we have an outstanding Read
+	// (which we will always have).	
+	/*in.Close()*/
 }
 
 // Synchronizes the internal back buffer with the terminal.
@@ -190,6 +194,7 @@ func PollEvent(event *Event) {
 			return
 		}
 	}
+
 	panic("unreachable")
 }
 
