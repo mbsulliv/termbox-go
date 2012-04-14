@@ -131,6 +131,29 @@ func Flush() {
 	flush()
 }
 
+// Blit copies a 'rectangle' of termbox cells into the termbox buffer at
+// the appropriate location. If the supplied rectangle exceeds backbuffer
+// boundaries, the operation is silently ignored in its entirety.
+func Blit(x, y, width int, cells []Cell) {
+	if width == 0 {
+		return
+	}
+
+	height := len(cells) / width
+
+	if x+width > back_buffer.width || y+height > back_buffer.height {
+		return
+	}
+
+	termindex := x + y*back_buffer.width
+
+	for ty := 0; ty < height; ty++ {
+		copy(back_buffer.cells[termindex:], cells[x:x+width])
+		termindex += back_buffer.width
+		x += width
+	}
+}
+
 // Sets the position of the cursor. See also HideCursor().
 func SetCursor(x, y int) {
 	if is_cursor_hidden(cursor_x, cursor_y) && !is_cursor_hidden(x, y) {
