@@ -148,10 +148,6 @@ func Blit(x, y, width int, cells []Cell) {
 	src := 0
 	row := width
 
-	if x+row > back_buffer.width {
-		row = back_buffer.width - x
-	}
-
 	for sy := 0; sy < height; sy++ {
 		copy(back_buffer.cells[dest:], cells[src:src+row])
 		dest += back_buffer.width
