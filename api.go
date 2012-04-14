@@ -140,17 +140,22 @@ func Blit(x, y, width int, cells []Cell) {
 	}
 
 	height := len(cells) / width
-
 	if x+width > back_buffer.width || y+height > back_buffer.height {
 		return
 	}
 
-	termindex := x + y*back_buffer.width
+	dest := x + y*back_buffer.width
+	src := 0
+	row := width
 
-	for ty := 0; ty < height; ty++ {
-		copy(back_buffer.cells[termindex:], cells[x:x+width])
-		termindex += back_buffer.width
-		x += width
+	if x+row > back_buffer.width {
+		row = back_buffer.width - x
+	}
+
+	for sy := 0; sy < height; sy++ {
+		copy(back_buffer.cells[dest:], cells[src:src+row])
+		dest += back_buffer.width
+		src += width
 	}
 }
 
