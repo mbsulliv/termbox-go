@@ -79,21 +79,21 @@ func write_cursor(x, y int) {
 }
 
 func write_sgr_fg(a Attribute) {
-	outbuf.WriteString("\033[3")
+	outbuf.WriteString("\033[38;5;")
 	outbuf.Write(strconv.AppendUint(intbuf, uint64(a-1), 10))
 	outbuf.WriteString("m")
 }
 
 func write_sgr_bg(a Attribute) {
-	outbuf.WriteString("\033[4")
+	outbuf.WriteString("\033[48;5;")
 	outbuf.Write(strconv.AppendUint(intbuf, uint64(a-1), 10))
 	outbuf.WriteString("m")
 }
 
 func write_sgr(fg, bg Attribute) {
-	outbuf.WriteString("\033[3")
+	outbuf.WriteString("\033[38;5;")
 	outbuf.Write(strconv.AppendUint(intbuf, uint64(fg-1), 10))
-	outbuf.WriteString(";4")
+	outbuf.WriteString(";48;5;")
 	outbuf.Write(strconv.AppendUint(intbuf, uint64(bg-1), 10))
 	outbuf.WriteString("m")
 }
@@ -115,8 +115,8 @@ func get_term_size(fd uintptr) (int, int) {
 func send_attr(fg, bg Attribute) {
 	if fg != lastfg || bg != lastbg {
 		outbuf.WriteString(funcs[t_sgr0])
-		fgcol := fg & 0x0F
-		bgcol := bg & 0x0F
+		fgcol := fg & 0x00FF
+		bgcol := bg & 0x00FF
 		if fgcol != ColorDefault {
 			if bgcol != ColorDefault {
 				write_sgr(fgcol, bgcol)
