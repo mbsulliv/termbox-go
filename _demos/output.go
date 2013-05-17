@@ -1,6 +1,6 @@
 package main
 
-import "github.com/nsf/termbox-go"
+import "github.com/mbsulliv/termbox-go"
 
 const chars = "nnnnnnnnnbbbbbbbbbuuuuuuuuuBBBBBBBBB"
 
