@@ -8,7 +8,7 @@ type (
 	EventType uint8
 	Modifier  uint8
 	Key       uint16
-	Attribute uint16
+	Attribute uint32
 )
 
 // This type represents a termbox event. The 'Mod', 'Key' and 'Ch' fields are
@@ -130,7 +130,7 @@ const (
 )
 
 const (
-	AttrBold Attribute = 1 << (iota + 4)
+	AttrBold Attribute = 1 << (iota + 8)
 	AttrUnderline
 	AttrReverse
 )
