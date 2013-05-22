@@ -117,16 +117,55 @@ const (
 // Cell attributes, it is possible to use multiple attributes by combining them
 // using bitwise OR ('|'). Although, colors cannot be combined. But you can
 // combine attributes and a single color.
+//
+// See <http://misc.flogisoft.com/bash/tip_colors_and_formatting> for a pretty
+// good resource on color codes.
 const (
 	ColorDefault Attribute = iota
-	ColorBlack
+	ColorBlack // 1 is subtracted on use, so really 0
 	ColorRed
 	ColorGreen
 	ColorYellow
 	ColorBlue
 	ColorMagenta
 	ColorCyan
-	ColorWhite
+	ColorLightGray
+    ColorDarkGray
+    ColorLightRed
+    ColorLightGreen
+    ColorLightYellow
+    ColorLightBlue
+    ColorLightMagenta
+    ColorLightCyan
+    ColorWhite
+)
+
+const (
+    ColorGray100 Attribute = (iota + 232) // 1 is subtracted on use, so really 231
+    ColorGray3
+    ColorGray7
+    ColorGray11
+    ColorGray15
+    ColorGray19
+    ColorGray23
+    ColorGray27
+    ColorGray30
+    ColorGray35
+    ColorGray39
+    ColorGray42
+    ColorGray46
+    ColorGray50
+    ColorGray54
+    ColorGray58
+    ColorGray62
+    ColorGray66
+    ColorGray70
+    ColorGray74
+    ColorGray78
+    ColorGray82
+    ColorGray85
+    ColorGray89
+    ColorGray93
 )
 
 const (
