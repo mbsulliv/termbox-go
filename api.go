@@ -257,13 +257,14 @@ func PollEvent(event *Event) {
 		select {
 		case ev := <-input_comm:
 			if ev.err != nil {
-				return Event{Type: EventError, Err: ev.err}
+				*event = Event{Type: EventError, Err: ev.err}
+                return
 			}
 
 			inbuf = append(inbuf, ev.data...)
 			input_comm <- ev
-			if extract_event(&event) {
-				return event
+			if extract_event(event) {
+				return
 			}
 		case <-sigwinch:
 			event.Type = EventResize
