@@ -2,11 +2,13 @@
 
 package termbox
 
-import "fmt"
-import "os"
-import "os/signal"
-import "syscall"
-import "runtime"
+import (
+    "os"
+    "os/signal"
+    "syscall"
+    "runtime"
+    "fmt"
+)
 
 // public API
 
@@ -179,6 +181,29 @@ func Flush() error {
 	return flush()
 }
 
+// Blit copies a 'rectangle' of termbox cells into the termbox buffer at
+// the appropriate location. If the supplied rectangle exceeds backbuffer
+// boundaries, the operation is silently ignored in its entirety.
+func Blit(x, y, width int, cells []Cell) {
+	if width == 0 {
+		return
+	}
+
+	height := len(cells) / width
+	if x+width > back_buffer.width || y+height > back_buffer.height {
+		return
+	}
+
+	dest := x + y*back_buffer.width
+	src := 0
+
+	for sy := 0; sy < height; sy++ {
+		copy(back_buffer.cells[dest:], cells[src:src+width])
+		dest += back_buffer.width
+		src += width
+	}
+}
+
 // Sets the position of the cursor. See also HideCursor().
 func SetCursor(x, y int) {
 	if is_cursor_hidden(cursor_x, cursor_y) && !is_cursor_hidden(x, y) {
@@ -221,13 +246,11 @@ func CellBuffer() []Cell {
 }
 
 // Wait for an event and return it. This is a blocking function call.
-func PollEvent() Event {
-	var event Event
-
+func PollEvent(event *Event) {
 	// try to extract event from input buffer, return on success
 	event.Type = EventKey
-	if extract_event(&event) {
-		return event
+	if extract_event(event) {
+		return
 	}
 
 	for {
@@ -245,9 +268,10 @@ func PollEvent() Event {
 		case <-sigwinch:
 			event.Type = EventResize
 			event.Width, event.Height = get_term_size(out.Fd())
-			return event
+			return
 		}
 	}
+
 	panic("unreachable")
 }
 
