@@ -639,7 +639,8 @@ func main() {
 	ctrlxpressed := false
 loop:
 	for {
-		switch ev := termbox.PollEvent(); ev.Type {
+        var ev termbox.Event
+		switch termbox.PollEvent(&ev); ev.Type {
 		case termbox.EventKey:
 			if ev.Key == termbox.KeyCtrlQ && ctrlxpressed {
 				break loop
