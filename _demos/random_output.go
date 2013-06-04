@@ -1,48 +1,66 @@
 package main
 
-import "github.com/mbsulliv/termbox-go"
-import "math/rand"
-import "time"
+import (
+    "github.com/mbsulliv/termbox-go"
+    "math/rand"
+    "runtime/pprof"
+    "os"
+    "log"
+)
 
-func draw() {
-	w, h := termbox.Size()
-	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
-	for y := 0; y < h; y++ {
-		for x := 0; x < w; x++ {
-			termbox.SetCell(x, y, ' ', termbox.ColorDefault,
-				termbox.Attribute(rand.Int() % 8)+1)
-		}
-	}
+var bufs [][]termbox.Cell
+
+func draw(aWidth int, aBufNum int) {
+    termbox.Blit(0,0, aWidth, bufs[aBufNum])
 	termbox.Flush()
 }
 
 func main() {
-	err := termbox.Init()
-	if err != nil {
-		panic(err)
-	}
+    vF,vProfErr := os.Create("dat.prof")
+    if vProfErr != nil { log.Fatal(vProfErr) }
+    pprof.StartCPUProfile(vF)
+    defer pprof.StopCPUProfile()
+
+	vErr := termbox.Init()
+	if vErr != nil { panic(vErr) }
 	defer termbox.Close()
 
-	event_queue := make(chan termbox.Event)
+	vEventQueue := make(chan termbox.Event)
 	go func() {
 		for {
-            var ev termbox.Event
-            termbox.PollEvent(&ev)
-			event_queue <- ev
+            var vEv termbox.Event
+            termbox.PollEvent(&vEv)
+			vEventQueue <- vEv
 		}
 	}()
 
-	draw()
-loop:
-	for {
+    vQuitCnt := 200
+    vMaxBuf  := 10
+    vCurBuf  := vMaxBuf-1
+
+	vW,vH := termbox.Size()
+    bufs = make([][]termbox.Cell, vMaxBuf)
+    for vI := 0 ; vI < vMaxBuf ; vI++ {
+        bufs[vI] = make([]termbox.Cell, vW*vH)
+        for vY := 0 ; vY < vH ; vY++ {
+            for vX := 0 ; vX < vW ; vX++ {
+                bufs[vI][vY*vW+vX] = termbox.Cell{' ', termbox.ColorDefault, termbox.Attribute(rand.Int() % 8)+1}
+            }
+        }
+    }
+
+	draw(vW, vCurBuf)
+    vCurBuf--
+    loop: for {
 		select {
-		case ev := <-event_queue:
-			if ev.Type == termbox.EventKey && ev.Key == termbox.KeyEsc {
-				break loop
-			}
+		case vEv := <-vEventQueue:
+			if vEv.Type == termbox.EventKey && vEv.Key == termbox.KeyEsc { break loop }
 		default:
-			draw()
-			time.Sleep(10 * time.Millisecond)
+			draw(vW, vCurBuf)
+            vCurBuf--
+            if vCurBuf == 0 { vCurBuf = vMaxBuf-1 }
+            vQuitCnt--
+            if vQuitCnt == 0 { break loop }
 		}
 	}
 }

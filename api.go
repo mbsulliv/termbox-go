@@ -207,11 +207,15 @@ func Blit(x, y, width int, cells []Cell) {
 // Sets the position of the cursor. See also HideCursor().
 func SetCursor(x, y int) {
 	if is_cursor_hidden(cursor_x, cursor_y) && !is_cursor_hidden(x, y) {
-		outbuf.WriteString(funcs[t_show_cursor])
+        esub   = esmain[len(esmain):len(esmain)+len(funcs[t_show_cursor])]
+        esmain = esmain[           :len(esmain)+len(esub)]
+        copy(esub, funcs[t_show_cursor])
 	}
 
 	if !is_cursor_hidden(cursor_x, cursor_y) && is_cursor_hidden(x, y) {
-		outbuf.WriteString(funcs[t_hide_cursor])
+        esub   = esmain[len(esmain):len(esmain)+len(funcs[t_hide_cursor])]
+        esmain = esmain[           :len(esmain)+len(esub)]
+        copy(esub, funcs[t_hide_cursor])
 	}
 
 	cursor_x, cursor_y = x, y
